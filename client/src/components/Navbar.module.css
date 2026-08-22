@@ -1,0 +1,114 @@
+.navbar {
+  position: sticky;
+  top: 0;
+
+  z-index: 100;
+
+  width: 100%;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.container {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+  max-width: 1200px;
+
+  min-height: 64px;
+
+  margin: 0 auto;
+
+  padding: 0 20px;
+
+  box-sizing: border-box;
+}
+
+.logo {
+  color: #111827;
+
+  font-size: 20px;
+  font-weight: 700;
+
+  text-decoration: none;
+
+  transition: color 0.2s ease;
+}
+
+.logo:hover {
+  color: #2563eb;
+}
+
+.right {
+  display: flex;
+
+  align-items: center;
+
+  gap: 16px;
+}
+
+.username {
+  color: #4b5563;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.logoutButton {
+  padding: 8px 14px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-family: inherit;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.logoutButton:hover {
+  background: #f9fafb;
+
+  border-color: #9ca3af;
+
+  color: #111827;
+}
+
+@media (max-width: 600px) {
+  .container {
+    min-height: 58px;
+
+    padding: 0 14px;
+  }
+
+  .username {
+    display: none;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+
+  .logoutButton {
+    padding: 7px 11px;
+  }
+}

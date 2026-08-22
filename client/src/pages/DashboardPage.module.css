@@ -1,0 +1,392 @@
+.page {
+  min-height: 100vh;
+
+  background: #f3f4f6;
+
+  padding: 32px 20px 60px;
+
+  box-sizing: border-box;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+
+  margin: 0 auto;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+  margin-bottom: 32px;
+
+  padding: 28px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.header h1 {
+  margin: 0 0 8px;
+
+  color: #111827;
+
+  font-size: 30px;
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+.header p {
+  margin: 4px 0;
+
+  color: #6b7280;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* =========================
+   SECTION
+========================= */
+
+.section {
+  margin-bottom: 28px;
+
+  padding: 24px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.sectionTitle {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 20px;
+}
+
+.sectionTitle h2 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 22px;
+  font-weight: 650;
+}
+
+/* =========================
+   PROJECTS
+========================= */
+
+.projectsGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+/* =========================
+   TASKS
+========================= */
+
+.tasksList {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+
+  margin-top: 20px;
+}
+
+.taskCard {
+  padding: 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.taskCard:hover {
+  border-color: #d1d5db;
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+/* =========================
+   TASK HEADER
+========================= */
+
+.taskHeader {
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 10px;
+}
+
+.taskHeader h3 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 17px;
+  font-weight: 650;
+
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================
+   BADGES
+========================= */
+
+.badges {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  flex-shrink: 0;
+}
+
+.badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+/* STATUS */
+
+.statusTodo {
+  background: #f3f4f6;
+
+  color: #4b5563;
+}
+
+.statusProgress {
+  background: #dbeafe;
+
+  color: #1d4ed8;
+}
+
+.statusCompleted {
+  background: #dcfce7;
+
+  color: #15803d;
+}
+
+/* PRIORITY */
+
+.priorityLow {
+  background: #f3f4f6;
+
+  color: #6b7280;
+}
+
+.priorityMedium {
+  background: #fef3c7;
+
+  color: #b45309;
+}
+
+.priorityHigh {
+  background: #fee2e2;
+
+  color: #dc2626;
+}
+
+/* =========================
+   DESCRIPTION
+========================= */
+
+.taskDescription {
+  margin: 0 0 16px;
+
+  color: #6b7280;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================
+   TASK ACTIONS
+========================= */
+
+.taskActions {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+.button {
+  padding: 8px 12px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #374151;
+
+  font-family: inherit;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.button:hover:not(:disabled) {
+  background: #f9fafb;
+
+  border-color: #9ca3af;
+}
+
+.deleteButton {
+  color: #dc2626;
+
+  border-color: #fecaca;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background: #fef2f2;
+
+  border-color: #fca5a5;
+}
+
+.button:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+/* =========================
+   ERROR
+========================= */
+
+.error {
+  margin: 0;
+
+  padding: 12px 14px;
+
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  background: #fef2f2;
+
+  color: #dc2626;
+
+  font-size: 14px;
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty {
+  margin: 0;
+
+  padding: 30px 20px;
+
+  text-align: center;
+
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1000px) {
+  .projectsGrid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 20px 12px 40px;
+  }
+
+  .section {
+    padding: 18px;
+  }
+
+  .header {
+    padding: 20px;
+  }
+
+  .header h1 {
+    font-size: 24px;
+  }
+
+  .projectsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .taskHeader {
+    flex-direction: column;
+  }
+
+  .badges {
+    flex-shrink: 1;
+  }
+
+  .taskActions {
+    flex-direction: column;
+  }
+
+  .button {
+    width: 100%;
+  }
+}
