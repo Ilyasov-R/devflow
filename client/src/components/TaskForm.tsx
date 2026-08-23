@@ -13,18 +13,25 @@ import styles from "./TaskForm.module.css";
 
 interface TaskFormProps {
   projectId: number;
+  initialStatus?: string;
+  onCancel?: () => void;
 }
 
 const TaskForm = ({
   projectId,
+  initialStatus = "todo",
+  onCancel,
 }: TaskFormProps) => {
   const dispatch = useAppDispatch();
 
   const [title, setTitle] = useState("");
+
   const [description, setDescription] =
     useState("");
+
   const [status, setStatus] =
-    useState("todo");
+    useState(initialStatus);
+
   const [priority, setPriority] =
     useState("medium");
 
@@ -64,8 +71,10 @@ const TaskForm = ({
 
       setTitle("");
       setDescription("");
-      setStatus("todo");
+      setStatus(initialStatus);
       setPriority("medium");
+
+      onCancel?.();
     } catch (error) {
       dispatch(
         showError(
@@ -81,85 +90,168 @@ const TaskForm = ({
 
   return (
     <div className={styles.form}>
-      <h2 className={styles.title}>
-        Создать задачу
-      </h2>
+      <div className={styles.formHeader}>
+        <div>
+          <h2 className={styles.title}>
+            Создать задачу
+          </h2>
 
-      <input
-        className={styles.input}
-        type="text"
-        placeholder="Название задачи"
-        value={title}
-        onChange={(event) =>
-          setTitle(event.target.value)
-        }
-        disabled={isSubmitting}
-      />
+          <p className={styles.subtitle}>
+            Добавьте задачу в текущий проект
+          </p>
+        </div>
 
-      <textarea
-        className={styles.textarea}
-        placeholder="Описание задачи"
-        value={description}
-        onChange={(event) =>
-          setDescription(
-            event.target.value,
-          )
-        }
-        disabled={isSubmitting}
-      />
+        {onCancel && (
+          <button
+            type="button"
+            className={styles.closeButton}
+            onClick={onCancel}
+            disabled={isSubmitting}
+            aria-label="Закрыть"
+          >
+            ×
+          </button>
+        )}
+      </div>
 
-      <select
-        className={styles.select}
-        value={status}
-        onChange={(event) =>
-          setStatus(event.target.value)
-        }
-        disabled={isSubmitting}
-      >
-        <option value="todo">
-          К выполнению
-        </option>
+      <div className={styles.fields}>
+        <div className={styles.field}>
+          <label
+            className={styles.label}
+            htmlFor="task-title"
+          >
+            Название задачи
+          </label>
 
-        <option value="in-progress">
-          В процессе
-        </option>
+          <input
+            id="task-title"
+            className={styles.input}
+            type="text"
+            placeholder="Например: Создать авторизацию"
+            value={title}
+            onChange={(event) =>
+              setTitle(
+                event.target.value,
+              )
+            }
+            disabled={isSubmitting}
+          />
+        </div>
 
-        <option value="completed">
-          Выполнено
-        </option>
-      </select>
+        <div className={styles.field}>
+          <label
+            className={styles.label}
+            htmlFor="task-description"
+          >
+            Описание
+          </label>
 
-      <select
-        className={styles.select}
-        value={priority}
-        onChange={(event) =>
-          setPriority(event.target.value)
-        }
-        disabled={isSubmitting}
-      >
-        <option value="low">
-          Низкий приоритет
-        </option>
+          <textarea
+            id="task-description"
+            className={styles.textarea}
+            placeholder="Кратко опишите, что нужно сделать"
+            value={description}
+            onChange={(event) =>
+              setDescription(
+                event.target.value,
+              )
+            }
+            disabled={isSubmitting}
+          />
+        </div>
 
-        <option value="medium">
-          Средний приоритет
-        </option>
+        <div className={styles.row}>
+          <div className={styles.field}>
+            <label
+              className={styles.label}
+              htmlFor="task-status"
+            >
+              Статус
+            </label>
 
-        <option value="high">
-          Высокий приоритет
-        </option>
-      </select>
+            <select
+              id="task-status"
+              className={styles.select}
+              value={status}
+              onChange={(event) =>
+                setStatus(
+                  event.target.value,
+                )
+              }
+              disabled={isSubmitting}
+            >
+              <option value="todo">
+                К выполнению
+              </option>
 
-      <button
-        className={styles.button}
-        type="button"
-        onClick={handleSubmit}
-        disabled={isSubmitting}
-      >
-        {isSubmitting
-          ? "Создание..."
-          : "Создать задачу"}
-      </button>
+              <option value="in-progress">
+                В процессе
+              </option>
+
+              <option value="completed">
+                Выполнено
+              </option>
+            </select>
+          </div>
+
+          <div className={styles.field}>
+            <label
+              className={styles.label}
+              htmlFor="task-priority"
+            >
+              Приоритет
+            </label>
+
+            <select
+              id="task-priority"
+              className={styles.select}
+              value={priority}
+              onChange={(event) =>
+                setPriority(
+                  event.target.value,
+                )
+              }
+              disabled={isSubmitting}
+            >
+              <option value="low">
+                Низкий
+              </option>
+
+              <option value="medium">
+                Средний
+              </option>
+
+              <option value="high">
+                Высокий
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.actions}>
+        {onCancel && (
+          <button
+            type="button"
+            className={styles.cancelButton}
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            Отмена
+          </button>
+        )}
+
+        <button
+          type="button"
+          className={styles.submitButton}
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting
+            ? "Создание..."
+            : "Создать задачу"}
+        </button>
+      </div>
     </div>
   );
 };

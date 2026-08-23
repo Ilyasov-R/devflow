@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../app/hooks";
 
 import {
   createProject,
@@ -27,10 +30,14 @@ const ProjectForm = ({
 }: ProjectFormProps) => {
   const dispatch = useAppDispatch();
 
-  const { isCreating, isUpdating } =
-    useAppSelector(
-      (state) => state.projects,
-    );
+  const {
+    isCreating,
+    isUpdating,
+  } = useAppSelector(
+    (state) => state.projects,
+  );
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const [name, setName] = useState("");
   const [description, setDescription] =
@@ -43,10 +50,14 @@ const ProjectForm = ({
   useEffect(() => {
     if (project) {
       setName(project.name);
+
       setDescription(
         project.description || "",
       );
+
       setStatus(project.status);
+
+      setIsOpen(true);
     } else {
       setName("");
       setDescription("");
@@ -103,6 +114,8 @@ const ProjectForm = ({
       setDescription("");
       setStatus("active");
 
+      setIsOpen(false);
+
       onCancel();
     } catch (error) {
       dispatch(
@@ -117,86 +130,142 @@ const ProjectForm = ({
     }
   };
 
+  const handleCancel = () => {
+    if (isCreating || isUpdating) {
+      return;
+    }
+
+    setName("");
+    setDescription("");
+    setStatus("active");
+
+    setIsOpen(false);
+
+    onCancel();
+  };
+
   const isLoading =
     isCreating || isUpdating;
 
   return (
-    <div className={styles.form}>
-      <h2 className={styles.title}>
-        {isEditing
-          ? "Редактировать проект"
-          : "Создать проект"}
-      </h2>
-
-      <input
-        className={styles.input}
-        type="text"
-        placeholder="Название проекта"
-        value={name}
-        onChange={(event) =>
-          setName(event.target.value)
-        }
-        disabled={isLoading}
-      />
-
-      <textarea
-        className={styles.textarea}
-        placeholder="Описание проекта"
-        value={description}
-        onChange={(event) =>
-          setDescription(
-            event.target.value,
-          )
-        }
-        disabled={isLoading}
-      />
-
-      <select
-        className={styles.select}
-        value={status}
-        onChange={(event) =>
-          setStatus(event.target.value)
-        }
-        disabled={isLoading}
-      >
-        <option value="active">
-          Активный
-        </option>
-
-        <option value="completed">
-          Завершён
-        </option>
-
-        <option value="archived">
-          Архивный
-        </option>
-      </select>
-
-      <div className={styles.buttons}>
+    <div className={styles.wrapper}>
+      {!isOpen && !isEditing ? (
         <button
           type="button"
-          className={styles.button}
-          onClick={handleSubmit}
-          disabled={isLoading}
+          className={styles.openButton}
+          onClick={() => setIsOpen(true)}
         >
-          {isLoading
-            ? "Сохранение..."
-            : isEditing
-              ? "Сохранить изменения"
-              : "Создать проект"}
-        </button>
+          <span className={styles.plus}>
+            +
+          </span>
 
-        {isEditing && (
-          <button
-            type="button"
-            className={styles.cancelButton}
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            Отмена
-          </button>
-        )}
-      </div>
+          Создать проект
+        </button>
+      ) : (
+        <div className={styles.form}>
+          <div className={styles.formHeader}>
+            <div>
+              <h2 className={styles.title}>
+                {isEditing
+                  ? "Редактировать проект"
+                  : "Новый проект"}
+              </h2>
+
+              <p className={styles.subtitle}>
+                {isEditing
+                  ? "Измените данные проекта"
+                  : "Создайте новый проект для работы"}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              className={styles.closeButton}
+              onClick={handleCancel}
+              disabled={isLoading}
+              aria-label="Закрыть"
+            >
+              ×
+            </button>
+          </div>
+
+          <div className={styles.fields}>
+            <input
+              className={styles.input}
+              type="text"
+              placeholder="Название проекта"
+              value={name}
+              onChange={(event) =>
+                setName(
+                  event.target.value,
+                )
+              }
+              disabled={isLoading}
+              autoFocus
+            />
+
+            <textarea
+              className={styles.textarea}
+              placeholder="Описание проекта"
+              value={description}
+              onChange={(event) =>
+                setDescription(
+                  event.target.value,
+                )
+              }
+              disabled={isLoading}
+              rows={3}
+            />
+
+            <select
+              className={styles.select}
+              value={status}
+              onChange={(event) =>
+                setStatus(
+                  event.target.value,
+                )
+              }
+              disabled={isLoading}
+            >
+              <option value="active">
+                Активный
+              </option>
+
+              <option value="completed">
+                Завершён
+              </option>
+
+              <option value="archived">
+                Архивный
+              </option>
+            </select>
+          </div>
+
+          <div className={styles.actions}>
+            <button
+              type="button"
+              className={styles.cancelButton}
+              onClick={handleCancel}
+              disabled={isLoading}
+            >
+              Отмена
+            </button>
+
+            <button
+              type="button"
+              className={styles.submitButton}
+              onClick={handleSubmit}
+              disabled={isLoading}
+            >
+              {isLoading
+                ? "Сохранение..."
+                : isEditing
+                  ? "Сохранить изменения"
+                  : "Создать проект"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

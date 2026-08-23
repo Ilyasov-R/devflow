@@ -1,22 +1,16 @@
 import { useEffect, useState } from "react";
 
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 
 import ProjectForm from "../components/ProjectForm";
-import ProjectCard from "../components/ProjectCard";
 import TaskForm from "../components/TaskForm";
 import TaskEditForm from "../components/TaskEditForm";
 import ConfirmModal from "../components/ConfirmModal";
 import Loader from "../components/Loader";
 import EmptyState from "../components/EmptyState";
+import KanbanBoard from "../components/KanbanBoard";
 
-import {
-  deleteTask,
-  fetchTasks,
-} from "../features/tasks/tasksSlice";
+import { deleteTask, fetchTasks } from "../features/tasks/tasksSlice";
 
 import {
   deleteProject,
@@ -40,9 +34,7 @@ const DashboardPage = () => {
   // AUTH
   // =========================
 
-  const { user } = useAppSelector(
-    (state) => state.auth,
-  );
+  const { user } = useAppSelector((state) => state.auth);
 
   // =========================
   // PROJECTS
@@ -52,9 +44,7 @@ const DashboardPage = () => {
     projects,
     loading: projectsLoading,
     isDeleting: isDeletingProject,
-  } = useAppSelector(
-    (state) => state.projects,
-  );
+  } = useAppSelector((state) => state.projects);
 
   // =========================
   // TASKS
@@ -64,76 +54,80 @@ const DashboardPage = () => {
     tasks,
     isFetching: tasksLoading,
     isDeleting: isDeletingTask,
-  } = useAppSelector(
-    (state) => state.tasks,
-  );
+  } = useAppSelector((state) => state.tasks);
 
   // =========================
   // LOCAL STATE
   // =========================
 
-  const [editingProject, setEditingProject] =
-    useState<Project | null>(null);
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
+    null,
+  );
 
-  const [editingTask, setEditingTask] =
-    useState<Task | null>(null);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
 
-  const [selectedProjectId, setSelectedProjectId] =
-    useState<number | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-  const [deleteTaskId, setDeleteTaskId] =
-    useState<number | null>(null);
+  const [isProjectFormOpen, setIsProjectFormOpen] = useState(false);
 
-  const [deleteProjectId, setDeleteProjectId] =
-    useState<number | null>(null);
+  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
+
+  const [deleteTaskId, setDeleteTaskId] = useState<number | null>(null);
+
+  const [deleteProjectId, setDeleteProjectId] = useState<number | null>(null);
+
+  const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
 
   // =========================
   // FETCH PROJECTS
   // =========================
 
   useEffect(() => {
-    const loadProjects = async () => {
-      try {
-        await dispatch(
-          fetchProjects(),
-        ).unwrap();
-      } catch (error) {
-        dispatch(
-          showError(
-            typeof error === "string"
-              ? error
-              : "Не удалось загрузить проекты",
-          ),
-        );
-      }
-    };
-
-    loadProjects();
+    dispatch(fetchProjects());
   }, [dispatch]);
 
   // =========================
-  // VIEW TASKS
+  // SELECT FIRST PROJECT
   // =========================
 
-  const handleViewTasks = async (
-    projectId: number,
-  ) => {
+  useEffect(() => {
+    if (selectedProjectId === null && projects.length > 0) {
+      setSelectedProjectId(projects[0].id);
+    }
+  }, [projects, selectedProjectId]);
+
+  // =========================
+  // CHECK SELECTED PROJECT
+  // =========================
+
+  useEffect(() => {
+    if (
+      selectedProjectId !== null &&
+      !projects.some((project) => project.id === selectedProjectId)
+    ) {
+      setSelectedProjectId(projects.length > 0 ? projects[0].id : null);
+    }
+  }, [projects, selectedProjectId]);
+
+  // =========================
+  // FETCH TASKS
+  // =========================
+
+  useEffect(() => {
+    if (selectedProjectId !== null) {
+      dispatch(fetchTasks(selectedProjectId));
+    }
+  }, [dispatch, selectedProjectId]);
+
+  // =========================
+  // SELECT PROJECT
+  // =========================
+
+  const handleSelectProject = (projectId: number) => {
     setSelectedProjectId(projectId);
     setEditingTask(null);
-
-    try {
-      await dispatch(
-        fetchTasks(projectId),
-      ).unwrap();
-    } catch (error) {
-      dispatch(
-        showError(
-          typeof error === "string"
-            ? error
-            : "Не удалось загрузить задачи",
-        ),
-      );
-    }
+    setViewMode("list");
+    setIsTaskFormOpen(false);
   };
 
   // =========================
@@ -141,8 +135,7 @@ const DashboardPage = () => {
   // =========================
 
   const selectedProject = projects.find(
-    (project) =>
-      project.id === selectedProjectId,
+    (project) => project.id === selectedProjectId,
   );
 
   // =========================
@@ -150,17 +143,14 @@ const DashboardPage = () => {
   // =========================
 
   const projectToDelete = projects.find(
-    (project) =>
-      project.id === deleteProjectId,
+    (project) => project.id === deleteProjectId,
   );
 
   // =========================
   // STATUS
   // =========================
 
-  const getStatusClass = (
-    status: string,
-  ) => {
+  const getStatusClass = (status: string) => {
     switch (status) {
       case "todo":
         return styles.statusTodo;
@@ -176,9 +166,7 @@ const DashboardPage = () => {
     }
   };
 
-  const getStatusLabel = (
-    status: string,
-  ) => {
+  const getStatusLabel = (status: string) => {
     switch (status) {
       case "todo":
         return "К выполнению";
@@ -198,9 +186,7 @@ const DashboardPage = () => {
   // PRIORITY
   // =========================
 
-  const getPriorityClass = (
-    priority: string,
-  ) => {
+  const getPriorityClass = (priority: string) => {
     switch (priority) {
       case "low":
         return styles.priorityLow;
@@ -216,9 +202,7 @@ const DashboardPage = () => {
     }
   };
 
-  const getPriorityLabel = (
-    priority: string,
-  ) => {
+  const getPriorityLabel = (priority: string) => {
     switch (priority) {
       case "low":
         return "Низкий";
@@ -244,23 +228,15 @@ const DashboardPage = () => {
     }
 
     try {
-      await dispatch(
-        deleteTask(deleteTaskId),
-      ).unwrap();
+      await dispatch(deleteTask(deleteTaskId)).unwrap();
 
-      dispatch(
-        showSuccess(
-          "Задача успешно удалена",
-        ),
-      );
+      dispatch(showSuccess("Задача успешно удалена"));
 
       setDeleteTaskId(null);
     } catch (error) {
       dispatch(
         showError(
-          typeof error === "string"
-            ? error
-            : "Не удалось удалить задачу",
+          typeof error === "string" ? error : "Не удалось удалить задачу",
         ),
       );
     }
@@ -276,33 +252,49 @@ const DashboardPage = () => {
     }
 
     try {
-      await dispatch(
-        deleteProject(deleteProjectId),
-      ).unwrap();
+      await dispatch(deleteProject(deleteProjectId)).unwrap();
 
-      dispatch(
-        showSuccess(
-          "Проект успешно удалён",
-        ),
-      );
+      dispatch(showSuccess("Проект успешно удалён"));
 
-      if (
-        selectedProjectId ===
-        deleteProjectId
-      ) {
-        setSelectedProjectId(null);
+      if (selectedProjectId === deleteProjectId) {
+        const remainingProjects = projects.filter(
+          (project) => project.id !== deleteProjectId,
+        );
+
+        setSelectedProjectId(
+          remainingProjects.length > 0 ? remainingProjects[0].id : null,
+        );
+
+        setEditingTask(null);
+        setIsTaskFormOpen(false);
       }
 
       setDeleteProjectId(null);
+      setEditingProject(null);
     } catch (error) {
       dispatch(
         showError(
-          typeof error === "string"
-            ? error
-            : "Не удалось удалить проект",
+          typeof error === "string" ? error : "Не удалось удалить проект",
         ),
       );
     }
+  };
+
+  // =========================
+  // PROJECT FORM CLOSE
+  // =========================
+
+  const handleCloseProjectForm = () => {
+    setIsProjectFormOpen(false);
+    setEditingProject(null);
+  };
+
+  // =========================
+  // TASK FORM CLOSE
+  // =========================
+
+  const handleCloseTaskForm = () => {
+    setIsTaskFormOpen(false);
   };
 
   // =========================
@@ -310,314 +302,475 @@ const DashboardPage = () => {
   // =========================
 
   return (
-    <main className={styles.page}>
-      <div className={styles.container}>
-        {/* HEADER */}
+    <>
+      <main className={styles.page}>
+        <div className={styles.layout}>
+          {/* =========================
+              SIDEBAR
+          ========================= */}
 
-        <header className={styles.header}>
-          <h1>
-            Панель управления
-          </h1>
+          <aside className={styles.sidebar}>
+            <div className={styles.sidebarHeader}>
+              <div>
+                <span className={styles.sidebarLabel}>Проекты</span>
 
-          <p>
-            Добро пожаловать,{" "}
-            {user?.username}!
-          </p>
+                <h2 className={styles.sidebarTitle}>Ваши проекты</h2>
+              </div>
 
-          <p>
-            Ваша рабочая панель DevFlow.
-          </p>
-        </header>
+              <button
+                type="button"
+                className={styles.addProjectButton}
+                onClick={() => {
+                  setEditingProject(null);
+                  setIsProjectFormOpen(true);
+                }}
+              >
+                +
+              </button>
+            </div>
 
-        {/* PROJECT FORM */}
-
-        <section
-          className={styles.section}
-        >
-          <ProjectForm
-            project={editingProject}
-            onCancel={() =>
-              setEditingProject(null)
-            }
-          />
-        </section>
-
-        {/* PROJECTS */}
-
-        <section
-          className={styles.section}
-        >
-          <div
-            className={
-              styles.sectionTitle
-            }
-          >
-            <h2>Проекты</h2>
-          </div>
-
-          {projectsLoading && (
-            <Loader
-              size="medium"
-              text="Загрузка проектов..."
-            />
-          )}
-
-          {!projectsLoading &&
-            projects.length === 0 && (
-              <EmptyState
-                title="Проектов пока нет"
-                description="Создайте свой первый проект, чтобы начать работу."
-              />
-            )}
-
-          {!projectsLoading && (
-            <div
-              className={
-                styles.projectsGrid
-              }
+            <button
+              type="button"
+              className={styles.createProjectButton}
+              onClick={() => {
+                setEditingProject(null);
+                setIsProjectFormOpen(true);
+              }}
             >
-              {projects.map(
-                (project) => (
-                  <ProjectCard
+              <span>+</span>
+              Создать проект
+            </button>
+
+            <div className={styles.projectList}>
+              {projectsLoading && <Loader size="small" text="Загрузка..." />}
+
+              {!projectsLoading && projects.length === 0 && (
+                <div className={styles.sidebarEmpty}>
+                  <span>Нет проектов</span>
+
+                  <small>Создайте первый проект</small>
+                </div>
+              )}
+
+              {!projectsLoading &&
+                projects.map((project) => (
+                  <div
                     key={project.id}
-                    project={project}
-                    onEdit={(project) =>
-                      setEditingProject(
-                        project,
-                      )
-                    }
-                    onDelete={(id) =>
-                      setDeleteProjectId(
-                        id,
-                      )
-                    }
-                    onViewTasks={
-                      handleViewTasks
-                    }
-                  />
-                ),
+                    className={`
+                      ${styles.projectItem}
+                      ${
+                        selectedProjectId === project.id
+                          ? styles.projectItemActive
+                          : ""
+                      }
+                    `}
+                  >
+                    <button
+                      type="button"
+                      className={styles.projectSelect}
+                      onClick={() => handleSelectProject(project.id)}
+                    >
+                      <span className={styles.projectDot} />
+
+                      <span className={styles.projectName}>{project.name}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={styles.projectMore}
+                      onClick={() => {
+                        setEditingProject(project);
+                        setIsProjectFormOpen(true);
+                      }}
+                      aria-label="Редактировать проект"
+                    >
+                      ⋯
+                    </button>
+                  </div>
+                ))}
+            </div>
+
+            <div className={styles.sidebarUser}>
+              <div className={styles.userAvatar}>
+                {user?.username?.charAt(0).toUpperCase() || "U"}
+              </div>
+
+              <div>
+                <strong>{user?.username || "Пользователь"}</strong>
+
+                <span>Рабочее пространство</span>
+              </div>
+            </div>
+          </aside>
+
+          {/* =========================
+              MAIN CONTENT
+          ========================= */}
+
+          <section className={styles.content}>
+            {/* HEADER */}
+
+            <header className={styles.contentHeader}>
+              <div>
+                <span className={styles.contentEyebrow}>Панель управления</span>
+
+                <h1>
+                  {selectedProject ? selectedProject.name : "Добро пожаловать"}
+                </h1>
+
+                <p>
+                  {selectedProject
+                    ? "Управляйте задачами проекта и контролируйте рабочий процесс."
+                    : `Добро пожаловать, ${user?.username || "пользователь"}!`}
+                </p>
+              </div>
+
+              {selectedProject && (
+                <button
+                  type="button"
+                  className={styles.primaryButton}
+                  onClick={() => setIsTaskFormOpen(true)}
+                >
+                  <span>+</span>
+                  Новая задача
+                </button>
               )}
-            </div>
-          )}
-        </section>
+            </header>
 
-        {/* TASKS */}
+            {/* PROJECT EMPTY STATE */}
 
-        {selectedProjectId !== null && (
-          <section
-            className={styles.section}
-          >
-            <div
-              className={
-                styles.sectionTitle
-              }
-            >
-              <h2>
-                Задачи
+            {!projectsLoading && projects.length === 0 && (
+              <div className={styles.emptyWorkspace}>
+                <EmptyState
+                  title="Создайте свой первый проект"
+                  description="После создания проекта здесь появятся его задачи и Kanban-доска."
+                />
 
-                {selectedProject && (
-                  <>
-                    {" "}
-                    —{" "}
-                    {
-                      selectedProject.name
-                    }
-                  </>
-                )}
-              </h2>
-            </div>
-
-            {/* CREATE TASK */}
-
-            <TaskForm
-              projectId={
-                selectedProjectId
-              }
-            />
-
-            {/* LOADING */}
-
-            {tasksLoading && (
-              <Loader
-                size="medium"
-                text="Загрузка задач..."
-              />
+                <button
+                  type="button"
+                  className={styles.primaryButton}
+                  onClick={() => {
+                    setEditingProject(null);
+                    setIsProjectFormOpen(true);
+                  }}
+                >
+                  + Создать проект
+                </button>
+              </div>
             )}
 
-            {/* EMPTY */}
+            {/* PROJECT WORKSPACE */}
 
-            {!tasksLoading &&
-              tasks.length === 0 && (
-                <EmptyState
-                  title="Задач пока нет"
-                  description="Создайте первую задачу для этого проекта."
-                />
-              )}
+            {selectedProject && (
+              <>
+                {/* STATS */}
 
-            {/* TASKS LIST */}
+                <div className={styles.stats}>
+                  <div className={styles.statCard}>
+                    <span>Всего задач</span>
 
-            {!tasksLoading &&
-              tasks.length > 0 && (
-                <div
-                  className={
-                    styles.tasksList
-                  }
-                >
-                  {tasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className={
-                        styles.taskCard
+                    <strong>{tasks.length}</strong>
+                  </div>
+
+                  <div className={styles.statCard}>
+                    <span>К выполнению</span>
+
+                    <strong>
+                      {tasks.filter((task) => task.status === "todo").length}
+                    </strong>
+                  </div>
+
+                  <div className={styles.statCard}>
+                    <span>В процессе</span>
+
+                    <strong>
+                      {
+                        tasks.filter((task) => task.status === "in-progress")
+                          .length
                       }
+                    </strong>
+                  </div>
+
+                  <div className={styles.statCard}>
+                    <span>Выполнено</span>
+
+                    <strong>
+                      {
+                        tasks.filter((task) => task.status === "completed")
+                          .length
+                      }
+                    </strong>
+                  </div>
+                </div>
+
+                {/* TASKS HEADER */}
+
+                <div className={styles.tasksHeader}>
+                  <div>
+                    <h2>Задачи</h2>
+
+                    <span>
+                      {tasks.length} {tasks.length === 1 ? "задача" : "задач"}
+                    </span>
+                  </div>
+
+                  <div className={styles.viewSwitcher}>
+                    <button
+                      type="button"
+                      className={`
+                        ${styles.viewButton}
+                        ${viewMode === "list" ? styles.viewButtonActive : ""}
+                      `}
+                      onClick={() => setViewMode("list")}
                     >
-                      {editingTask?.id ===
-                      task.id ? (
-                        <TaskEditForm
-                          task={task}
-                          onCancel={() =>
-                            setEditingTask(
-                              null,
-                            )
-                          }
-                        />
-                      ) : (
-                        <>
-                          {/* TASK HEADER */}
+                      ☷ Список
+                    </button>
 
-                          <div
-                            className={
-                              styles.taskHeader
-                            }
-                          >
-                            <h3>
-                              {task.title}
-                            </h3>
+                    <button
+                      type="button"
+                      className={`
+                        ${styles.viewButton}
+                        ${viewMode === "kanban" ? styles.viewButtonActive : ""}
+                      `}
+                      onClick={() => setViewMode("kanban")}
+                    >
+                      ▦ Kanban
+                    </button>
+                  </div>
+                </div>
 
-                            <div
-                              className={
-                                styles.badges
-                              }
-                            >
+                {/* LOADING */}
+
+                {tasksLoading && (
+                  <div className={styles.loading}>
+                    <Loader size="medium" text="Загрузка задач..." />
+                  </div>
+                )}
+
+                {/* EMPTY */}
+
+                {!tasksLoading && tasks.length === 0 && (
+                  <div className={styles.emptyTasks}>
+                    <EmptyState
+                      title="Задач пока нет"
+                      description="Создайте первую задачу для этого проекта."
+                    />
+
+                    <button
+                      type="button"
+                      className={styles.primaryButton}
+                      onClick={() => setIsTaskFormOpen(true)}
+                    >
+                      + Создать задачу
+                    </button>
+                  </div>
+                )}
+
+                {/* LIST */}
+
+                {!tasksLoading && tasks.length > 0 && viewMode === "list" && (
+                  <div className={styles.tasksList}>
+                    {tasks.map((task) => (
+                      <article key={task.id} className={styles.taskCard}>
+                        <div className={styles.taskMain}>
+                          <div className={styles.taskHeader}>
+                            <h3>{task.title}</h3>
+
+                            <div className={styles.badges}>
                               <span
-                                className={`${styles.badge} ${getStatusClass(
-                                  task.status,
-                                )}`}
+                                className={`
+                                    ${styles.badge}
+                                    ${getStatusClass(task.status)}
+                                  `}
                               >
-                                {getStatusLabel(
-                                  task.status,
-                                )}
+                                {getStatusLabel(task.status)}
                               </span>
 
                               <span
-                                className={`${styles.badge} ${getPriorityClass(
-                                  task.priority,
-                                )}`}
+                                className={`
+                                    ${styles.badge}
+                                    ${getPriorityClass(task.priority)}
+                                  `}
                               >
-                                {getPriorityLabel(
-                                  task.priority,
-                                )}
+                                {getPriorityLabel(task.priority)}
                               </span>
                             </div>
                           </div>
 
-                          {/* DESCRIPTION */}
-
-                          <p
-                            className={
-                              styles.taskDescription
-                            }
-                          >
-                            {task.description ||
-                              "Описание отсутствует"}
+                          <p className={styles.taskDescription}>
+                            {task.description || "Описание отсутствует"}
                           </p>
+                        </div>
 
-                          {/* ACTIONS */}
-
-                          <div
-                            className={
-                              styles.taskActions
-                            }
+                        <div className={styles.taskActions}>
+                          <button
+                            type="button"
+                            className={styles.button}
+                            onClick={() => setEditingTask(task)}
                           >
-                            <button
-                              type="button"
-                              className={
-                                styles.button
-                              }
-                              onClick={() =>
-                                setEditingTask(
-                                  task,
-                                )
-                              }
-                              disabled={
-                                isDeletingTask
-                              }
-                            >
-                              Редактировать
-                            </button>
+                            Редактировать
+                          </button>
 
-                            <button
-                              type="button"
-                              className={`${styles.button} ${styles.deleteButton}`}
-                              disabled={
-                                isDeletingTask
-                              }
-                              onClick={() =>
-                                setDeleteTaskId(
-                                  task.id,
-                                )
-                              }
-                            >
-                              {isDeletingTask
-                                ? "Удаление..."
-                                : "Удалить"}
-                            </button>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+                          <button
+                            type="button"
+                            className={`
+                                ${styles.button}
+                                ${styles.deleteButton}
+                              `}
+                            disabled={isDeletingTask}
+                            onClick={() => setDeleteTaskId(task.id)}
+                          >
+                            Удалить
+                          </button>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
+
+                {/* KANBAN */}
+
+                {!tasksLoading && tasks.length > 0 && viewMode === "kanban" && (
+                  <div className={styles.kanbanWrapper}>
+                    <KanbanBoard
+                      tasks={tasks}
+                      onEdit={(task: Task) => setEditingTask(task)}
+                      onDelete={(taskId: number) => setDeleteTaskId(taskId)}
+                      onAdd={() => setIsTaskFormOpen(true)}
+                    />
+                  </div>
+                )}
+              </>
+            )}
           </section>
-        )}
+        </div>
+      </main>
 
-        {/* DELETE TASK MODAL */}
+      {/* =========================
+          PROJECT MODAL
+      ========================= */}
 
-        {deleteTaskId !== null && (
-          <ConfirmModal
-            title="Удалить задачу?"
-            message="Это действие нельзя отменить. Вы действительно хотите удалить эту задачу?"
-            onCancel={() =>
-              setDeleteTaskId(null)
+      {isProjectFormOpen && (
+        <div
+          className={styles.modalOverlay}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              handleCloseProjectForm();
             }
-            onConfirm={handleDeleteTask}
-            loading={isDeletingTask}
-          />
-        )}
+          }}
+        >
+          <div className={styles.formModal}>
+            <button
+              type="button"
+              className={styles.modalClose}
+              onClick={handleCloseProjectForm}
+              aria-label="Закрыть"
+            >
+              ×
+            </button>
 
-        {/* DELETE PROJECT MODAL */}
+            <ProjectForm
+              project={editingProject}
+              onCancel={handleCloseProjectForm}
+            />
+          </div>
+        </div>
+      )}
 
-        {deleteProjectId !== null && (
-          <ConfirmModal
-            title="Удалить проект?"
-            message={
-              projectToDelete
-                ? `Вы действительно хотите удалить проект «${projectToDelete.name}»?`
-                : "Вы действительно хотите удалить этот проект?"
+      {/* =========================
+          TASK CREATE MODAL
+      ========================= */}
+
+      {isTaskFormOpen && selectedProject && (
+        <div
+          className={styles.modalOverlay}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              handleCloseTaskForm();
             }
-            onCancel={() =>
-              setDeleteProjectId(null)
+          }}
+        >
+          <div className={styles.formModal}>
+            <button
+              type="button"
+              className={styles.modalClose}
+              onClick={handleCloseTaskForm}
+              aria-label="Закрыть"
+            >
+              ×
+            </button>
+
+            <TaskForm
+              projectId={selectedProject.id}
+              onCancel={handleCloseTaskForm}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* =========================
+          TASK EDIT MODAL
+      ========================= */}
+
+      {editingTask && (
+        <div
+          className={styles.modalOverlay}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setEditingTask(null);
             }
-            onConfirm={
-              handleDeleteProject
-            }
-            loading={
-              isDeletingProject
-            }
-          />
-        )}
-      </div>
-    </main>
+          }}
+        >
+          <div className={styles.formModal}>
+            <button
+              type="button"
+              className={styles.modalClose}
+              onClick={() => setEditingTask(null)}
+              aria-label="Закрыть"
+            >
+              ×
+            </button>
+
+            <TaskEditForm
+              task={editingTask}
+              onCancel={() => setEditingTask(null)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* =========================
+          DELETE TASK
+      ========================= */}
+
+      {deleteTaskId !== null && (
+        <ConfirmModal
+          title="Удалить задачу?"
+          message="Это действие нельзя отменить. Вы действительно хотите удалить эту задачу?"
+          onCancel={() => setDeleteTaskId(null)}
+          onConfirm={handleDeleteTask}
+          loading={isDeletingTask}
+        />
+      )}
+
+      {/* =========================
+          DELETE PROJECT
+      ========================= */}
+
+      {deleteProjectId !== null && (
+        <ConfirmModal
+          title="Удалить проект?"
+          message={
+            projectToDelete
+              ? `Вы действительно хотите удалить проект «${projectToDelete.name}»?`
+              : "Вы действительно хотите удалить этот проект?"
+          }
+          onCancel={() => setDeleteProjectId(null)}
+          onConfirm={handleDeleteProject}
+          loading={isDeletingProject}
+        />
+      )}
+    </>
   );
 };
 
