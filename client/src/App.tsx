@@ -1,19 +1,13 @@
 import { useEffect } from "react";
 
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "./app/hooks";
+import { useAppDispatch, useAppSelector } from "./app/hooks";
 
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
+import HomePage from "./pages/HomePage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import ToastContainer from "./components/ToastContainer";
@@ -25,9 +19,7 @@ import { getMe } from "./features/auth/authSlice";
 function App() {
   const dispatch = useAppDispatch();
 
-  const { token } = useAppSelector(
-    (state) => state.auth,
-  );
+  const { token } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     if (token) {
@@ -42,26 +34,17 @@ function App() {
       <Routes>
         {/* Публичные страницы */}
 
-        <Route
-          path="/login"
-          element={<LoginPage />}
-        />
+        <Route path="/" element={<HomePage />} />
 
-        <Route
-          path="/register"
-          element={<RegisterPage />}
-        />
+        <Route path="/login" element={<LoginPage />} />
+
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* Защищённые страницы */}
 
-        <Route
-          element={<ProtectedRoute />}
-        >
+        <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
-            <Route
-              path="/dashboard"
-              element={<DashboardPage />}
-            />
+            <Route path="/dashboard" element={<DashboardPage />} />
           </Route>
         </Route>
       </Routes>
