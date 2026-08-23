@@ -1,0 +1,388 @@
+.wrapper {
+  position: fixed;
+
+  right: 24px;
+  bottom: 24px;
+
+  z-index: 9999;
+}
+
+/* =========================
+   FLOATING BUTTON
+========================= */
+
+.toggleButton {
+  position: relative;
+
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.14);
+
+  cursor: pointer;
+
+  font-size: 20px;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.toggleButton:hover {
+  transform: translateY(-2px);
+
+  background: #f8fafc;
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+.toggleButtonOpen {
+  font-size: 25px;
+
+  color: #64748b;
+}
+
+/* =========================
+   ONLINE BADGE
+========================= */
+
+.onlineBadge {
+  position: absolute;
+
+  top: -5px;
+  right: -5px;
+
+  min-width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 4px;
+
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+
+  background: #22c55e;
+
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+/* =========================
+   PANEL
+========================= */
+
+.panel {
+  position: absolute;
+
+  right: 0;
+  bottom: 64px;
+
+  width: 300px;
+
+  padding: 14px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+
+  animation: panelOpen 0.2s ease;
+}
+
+@keyframes panelOpen {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding-bottom: 12px;
+
+  border-bottom: 1px solid #eef2f7;
+}
+
+.teamIcon {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: #f1f5f9;
+
+  font-size: 17px;
+}
+
+.teamInfo {
+  min-width: 0;
+}
+
+.teamInfo strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: #0f172a;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.teamInfo span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #64748b;
+
+  font-size: 10px;
+}
+
+/* =========================
+   MEMBERS HEADER
+========================= */
+
+.membersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 12px 2px 7px;
+}
+
+.membersHeader > span:first-child {
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.onlineCount {
+  color: #22c55e;
+
+  font-size: 10px;
+}
+
+/* =========================
+   MEMBERS
+========================= */
+
+.members {
+  max-height: 280px;
+
+  overflow-y: auto;
+}
+
+.member {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 8px 5px;
+
+  border-radius: 9px;
+
+  transition: background 0.15s ease;
+}
+
+.member:hover {
+  background: #f8fafc;
+}
+
+/* =========================
+   AVATAR
+========================= */
+
+.avatar {
+  position: relative;
+
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e2e8f0;
+
+  color: #334155;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status {
+  position: absolute;
+
+  right: -1px;
+  bottom: -1px;
+
+  width: 9px;
+  height: 9px;
+
+  border: 2px solid #ffffff;
+
+  border-radius: 50%;
+}
+
+.online {
+  background: #22c55e;
+}
+
+.offline {
+  background: #94a3b8;
+}
+
+/* =========================
+   MEMBER INFO
+========================= */
+
+.memberInfo {
+  min-width: 0;
+
+  flex: 1;
+}
+
+.memberInfo strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: #0f172a;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.memberInfo span {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #64748b;
+
+  font-size: 10px;
+}
+
+/* =========================
+   ONLINE TEXT
+========================= */
+
+.onlineText {
+  flex-shrink: 0;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+}
+
+.onlineTextActive {
+  color: #22c55e;
+}
+
+/* =========================
+   LOADING / EMPTY
+========================= */
+
+.loading,
+.empty {
+  padding: 20px 5px;
+
+  text-align: center;
+
+  color: #64748b;
+
+  font-size: 11px;
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+.members::-webkit-scrollbar {
+  width: 4px;
+}
+
+.members::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.members::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+
+  border-radius: 10px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+  .wrapper {
+    right: 14px;
+    bottom: 14px;
+  }
+
+  .panel {
+    right: 0;
+
+    width: calc(100vw - 28px);
+
+    max-width: 300px;
+  }
+
+  .toggleButton {
+    width: 48px;
+    height: 48px;
+  }
+}

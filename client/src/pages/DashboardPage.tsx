@@ -9,6 +9,7 @@ import ConfirmModal from "../components/ConfirmModal";
 import Loader from "../components/Loader";
 import EmptyState from "../components/EmptyState";
 import KanbanBoard from "../components/KanbanBoard";
+import TeamMembers from "../components/TeamMembers";
 
 import { deleteTask, fetchTasks } from "../features/tasks/tasksSlice";
 
@@ -26,6 +27,7 @@ import type { Project } from "../features/projects/types";
 import type { Task } from "../features/tasks/types";
 
 import styles from "./DashboardPage.module.css";
+import TeamInvitations from "../components/TeamInvitations";
 
 const DashboardPage = () => {
   const dispatch = useAppDispatch();
@@ -60,23 +62,29 @@ const DashboardPage = () => {
   // LOCAL STATE
   // =========================
 
-  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
-    null,
-  );
+  const [selectedProjectId, setSelectedProjectId] =
+    useState<number | null>(null);
 
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [editingProject, setEditingProject] =
+    useState<Project | null>(null);
 
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editingTask, setEditingTask] =
+    useState<Task | null>(null);
 
-  const [isProjectFormOpen, setIsProjectFormOpen] = useState(false);
+  const [isProjectFormOpen, setIsProjectFormOpen] =
+    useState(false);
 
-  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
+  const [isTaskFormOpen, setIsTaskFormOpen] =
+    useState(false);
 
-  const [deleteTaskId, setDeleteTaskId] = useState<number | null>(null);
+  const [deleteTaskId, setDeleteTaskId] =
+    useState<number | null>(null);
 
-  const [deleteProjectId, setDeleteProjectId] = useState<number | null>(null);
+  const [deleteProjectId, setDeleteProjectId] =
+    useState<number | null>(null);
 
-  const [viewMode, setViewMode] = useState<"list" | "kanban">("list");
+  const [viewMode, setViewMode] =
+    useState<"list" | "kanban">("list");
 
   // =========================
   // FETCH PROJECTS
@@ -91,7 +99,10 @@ const DashboardPage = () => {
   // =========================
 
   useEffect(() => {
-    if (selectedProjectId === null && projects.length > 0) {
+    if (
+      selectedProjectId === null &&
+      projects.length > 0
+    ) {
       setSelectedProjectId(projects[0].id);
     }
   }, [projects, selectedProjectId]);
@@ -103,9 +114,15 @@ const DashboardPage = () => {
   useEffect(() => {
     if (
       selectedProjectId !== null &&
-      !projects.some((project) => project.id === selectedProjectId)
+      !projects.some(
+        (project) => project.id === selectedProjectId,
+      )
     ) {
-      setSelectedProjectId(projects.length > 0 ? projects[0].id : null);
+      setSelectedProjectId(
+        projects.length > 0
+          ? projects[0].id
+          : null,
+      );
     }
   }, [projects, selectedProjectId]);
 
@@ -123,7 +140,9 @@ const DashboardPage = () => {
   // SELECT PROJECT
   // =========================
 
-  const handleSelectProject = (projectId: number) => {
+  const handleSelectProject = (
+    projectId: number,
+  ) => {
     setSelectedProjectId(projectId);
     setEditingTask(null);
     setViewMode("list");
@@ -135,7 +154,8 @@ const DashboardPage = () => {
   // =========================
 
   const selectedProject = projects.find(
-    (project) => project.id === selectedProjectId,
+    (project) =>
+      project.id === selectedProjectId,
   );
 
   // =========================
@@ -143,14 +163,57 @@ const DashboardPage = () => {
   // =========================
 
   const projectToDelete = projects.find(
-    (project) => project.id === deleteProjectId,
+    (project) =>
+      project.id === deleteProjectId,
   );
 
   // =========================
-  // STATUS
+  // PROJECT STATUS
   // =========================
 
-  const getStatusClass = (status: string) => {
+  const getProjectStatusLabel = (
+    status: string,
+  ) => {
+    switch (status) {
+      case "active":
+        return "Активный";
+
+      case "completed":
+        return "Завершён";
+
+      case "archived":
+        return "Архивный";
+
+      default:
+        return status;
+    }
+  };
+
+  const getProjectStatusClass = (
+    status: string,
+  ) => {
+    switch (status) {
+      case "active":
+        return styles.projectStatusActive;
+
+      case "completed":
+        return styles.projectStatusCompleted;
+
+      case "archived":
+        return styles.projectStatusArchived;
+
+      default:
+        return "";
+    }
+  };
+
+  // =========================
+  // TASK STATUS
+  // =========================
+
+  const getStatusClass = (
+    status: string,
+  ) => {
     switch (status) {
       case "todo":
         return styles.statusTodo;
@@ -166,7 +229,9 @@ const DashboardPage = () => {
     }
   };
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (
+    status: string,
+  ) => {
     switch (status) {
       case "todo":
         return "К выполнению";
@@ -186,7 +251,9 @@ const DashboardPage = () => {
   // PRIORITY
   // =========================
 
-  const getPriorityClass = (priority: string) => {
+  const getPriorityClass = (
+    priority: string,
+  ) => {
     switch (priority) {
       case "low":
         return styles.priorityLow;
@@ -202,7 +269,9 @@ const DashboardPage = () => {
     }
   };
 
-  const getPriorityLabel = (priority: string) => {
+  const getPriorityLabel = (
+    priority: string,
+  ) => {
     switch (priority) {
       case "low":
         return "Низкий";
@@ -228,15 +297,23 @@ const DashboardPage = () => {
     }
 
     try {
-      await dispatch(deleteTask(deleteTaskId)).unwrap();
+      await dispatch(
+        deleteTask(deleteTaskId),
+      ).unwrap();
 
-      dispatch(showSuccess("Задача успешно удалена"));
+      dispatch(
+        showSuccess(
+          "Задача успешно удалена",
+        ),
+      );
 
       setDeleteTaskId(null);
     } catch (error) {
       dispatch(
         showError(
-          typeof error === "string" ? error : "Не удалось удалить задачу",
+          typeof error === "string"
+            ? error
+            : "Не удалось удалить задачу",
         ),
       );
     }
@@ -252,17 +329,31 @@ const DashboardPage = () => {
     }
 
     try {
-      await dispatch(deleteProject(deleteProjectId)).unwrap();
+      await dispatch(
+        deleteProject(deleteProjectId),
+      ).unwrap();
 
-      dispatch(showSuccess("Проект успешно удалён"));
+      dispatch(
+        showSuccess(
+          "Проект успешно удалён",
+        ),
+      );
 
-      if (selectedProjectId === deleteProjectId) {
-        const remainingProjects = projects.filter(
-          (project) => project.id !== deleteProjectId,
-        );
+      if (
+        selectedProjectId ===
+        deleteProjectId
+      ) {
+        const remainingProjects =
+          projects.filter(
+            (project) =>
+              project.id !==
+              deleteProjectId,
+          );
 
         setSelectedProjectId(
-          remainingProjects.length > 0 ? remainingProjects[0].id : null,
+          remainingProjects.length > 0
+            ? remainingProjects[0].id
+            : null,
         );
 
         setEditingTask(null);
@@ -274,7 +365,9 @@ const DashboardPage = () => {
     } catch (error) {
       dispatch(
         showError(
-          typeof error === "string" ? error : "Не удалось удалить проект",
+          typeof error === "string"
+            ? error
+            : "Не удалось удалить проект",
         ),
       );
     }
@@ -312,26 +405,31 @@ const DashboardPage = () => {
           <aside className={styles.sidebar}>
             <div className={styles.sidebarHeader}>
               <div>
-                <span className={styles.sidebarLabel}>Проекты</span>
+                <span
+                  className={
+                    styles.sidebarLabel
+                  }
+                >
+                  Проекты
+                </span>
 
-                <h2 className={styles.sidebarTitle}>Ваши проекты</h2>
+                <h2
+                  className={
+                    styles.sidebarTitle
+                  }
+                >
+                  Ваши проекты
+                </h2>
               </div>
-
-              <button
-                type="button"
-                className={styles.addProjectButton}
-                onClick={() => {
-                  setEditingProject(null);
-                  setIsProjectFormOpen(true);
-                }}
-              >
-                +
-              </button>
             </div>
+
+            {/* CREATE PROJECT */}
 
             <button
               type="button"
-              className={styles.createProjectButton}
+              className={
+                styles.createProjectButton
+              }
               onClick={() => {
                 setEditingProject(null);
                 setIsProjectFormOpen(true);
@@ -341,64 +439,156 @@ const DashboardPage = () => {
               Создать проект
             </button>
 
-            <div className={styles.projectList}>
-              {projectsLoading && <Loader size="small" text="Загрузка..." />}
+            {/* PROJECT LIST */}
 
-              {!projectsLoading && projects.length === 0 && (
-                <div className={styles.sidebarEmpty}>
-                  <span>Нет проектов</span>
-
-                  <small>Создайте первый проект</small>
-                </div>
+            <div
+              className={
+                styles.projectList
+              }
+            >
+              {projectsLoading && (
+                <Loader
+                  size="small"
+                  text="Загрузка..."
+                />
               )}
 
               {!projectsLoading &&
-                projects.map((project) => (
+                projects.length === 0 && (
                   <div
-                    key={project.id}
-                    className={`
-                      ${styles.projectItem}
-                      ${
-                        selectedProjectId === project.id
-                          ? styles.projectItemActive
-                          : ""
-                      }
-                    `}
+                    className={
+                      styles.sidebarEmpty
+                    }
                   >
-                    <button
-                      type="button"
-                      className={styles.projectSelect}
-                      onClick={() => handleSelectProject(project.id)}
-                    >
-                      <span className={styles.projectDot} />
+                    <span>
+                      Нет проектов
+                    </span>
 
-                      <span className={styles.projectName}>{project.name}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className={styles.projectMore}
-                      onClick={() => {
-                        setEditingProject(project);
-                        setIsProjectFormOpen(true);
-                      }}
-                      aria-label="Редактировать проект"
-                    >
-                      ⋯
-                    </button>
+                    <small>
+                      Создайте первый проект
+                    </small>
                   </div>
-                ))}
+                )}
+
+              {!projectsLoading &&
+                projects.map(
+                  (project) => (
+                    <div
+                      key={project.id}
+                      className={`
+                        ${styles.projectItem}
+                        ${
+                          selectedProjectId ===
+                          project.id
+                            ? styles.projectItemActive
+                            : ""
+                        }
+                      `}
+                    >
+                      <button
+                        type="button"
+                        className={
+                          styles.projectSelect
+                        }
+                        onClick={() =>
+                          handleSelectProject(
+                            project.id,
+                          )
+                        }
+                      >
+                        <span
+                          className={
+                            styles.projectDot
+                          }
+                        />
+
+                        <span
+                          className={
+                            styles.projectName
+                          }
+                        >
+                          {project.name}
+                        </span>
+                      </button>
+
+                      {/* PROJECT ACTIONS */}
+
+                      <div
+                        className={
+                          styles.projectActions
+                        }
+                      >
+                        <button
+                          type="button"
+                          className={
+                            styles.projectAction
+                          }
+                          onClick={() => {
+                            setEditingProject(
+                              project,
+                            );
+
+                            setIsProjectFormOpen(
+                              true,
+                            );
+                          }}
+                          aria-label="Редактировать проект"
+                          title="Редактировать"
+                        >
+                          ✎
+                        </button>
+
+                        <button
+                          type="button"
+                          className={`
+                            ${styles.projectAction}
+                            ${styles.projectDelete}
+                          `}
+                          onClick={() =>
+                            setDeleteProjectId(
+                              project.id,
+                            )
+                          }
+                          disabled={
+                            isDeletingProject
+                          }
+                          aria-label="Удалить проект"
+                          title="Удалить"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
+                  ),
+                )}
             </div>
 
-            <div className={styles.sidebarUser}>
-              <div className={styles.userAvatar}>
-                {user?.username?.charAt(0).toUpperCase() || "U"}
+            {/* USER */}
+
+            <div
+              className={
+                styles.sidebarUser
+              }
+            >
+              <div
+                className={
+                  styles.userAvatar
+                }
+              >
+                {user?.username
+                  ?.charAt(0)
+                  .toUpperCase() || "U"}
               </div>
 
               <div>
-                <strong>{user?.username || "Пользователь"}</strong>
+                <strong>
+                  {user?.username ||
+                    "Пользователь"}
+                </strong>
 
-                <span>Рабочее пространство</span>
+                <span>
+                  Рабочее пространство
+                </span>
               </div>
             </div>
           </aside>
@@ -407,29 +597,80 @@ const DashboardPage = () => {
               MAIN CONTENT
           ========================= */}
 
-          <section className={styles.content}>
+          <section
+            className={styles.content}
+          >
             {/* HEADER */}
 
-            <header className={styles.contentHeader}>
-              <div>
-                <span className={styles.contentEyebrow}>Панель управления</span>
+            <header
+              className={
+                styles.contentHeader
+              }
+            >
+              <div
+                className={
+                  styles.projectHeaderInfo
+                }
+              >
+                <span
+                  className={
+                    styles.contentEyebrow
+                  }
+                >
+                  Панель управления
+                </span>
 
-                <h1>
-                  {selectedProject ? selectedProject.name : "Добро пожаловать"}
-                </h1>
+                <div
+                  className={
+                    styles.projectTitleRow
+                  }
+                >
+                  <h1>
+                    {selectedProject
+                      ? selectedProject.name
+                      : "Добро пожаловать"}
+                  </h1>
 
-                <p>
+                  {selectedProject && (
+                    <span
+                      className={`
+                        ${styles.projectStatus}
+                        ${getProjectStatusClass(
+                          selectedProject.status,
+                        )}
+                      `}
+                    >
+                      {getProjectStatusLabel(
+                        selectedProject.status,
+                      )}
+                    </span>
+                  )}
+                </div>
+
+                <p
+                  className={
+                    styles.projectDescription
+                  }
+                >
                   {selectedProject
-                    ? "Управляйте задачами проекта и контролируйте рабочий процесс."
-                    : `Добро пожаловать, ${user?.username || "пользователь"}!`}
+                    ? selectedProject.description ||
+                      "Описание проекта отсутствует"
+                    : `Добро пожаловать, ${
+                        user?.username ||
+                        "пользователь"
+                      }!`}
                 </p>
               </div>
 
               {selectedProject && (
                 <button
                   type="button"
-                  className={styles.primaryButton}
-                  onClick={() => setIsTaskFormOpen(true)}
+                  className={
+                    styles.primaryButton
+                  }
+                  onClick={() =>
+                    setIsTaskFormOpen(true)
+                  }
                 >
                   <span>+</span>
                   Новая задача
@@ -439,25 +680,37 @@ const DashboardPage = () => {
 
             {/* PROJECT EMPTY STATE */}
 
-            {!projectsLoading && projects.length === 0 && (
-              <div className={styles.emptyWorkspace}>
-                <EmptyState
-                  title="Создайте свой первый проект"
-                  description="После создания проекта здесь появятся его задачи и Kanban-доска."
-                />
-
-                <button
-                  type="button"
-                  className={styles.primaryButton}
-                  onClick={() => {
-                    setEditingProject(null);
-                    setIsProjectFormOpen(true);
-                  }}
+            {!projectsLoading &&
+              projects.length === 0 && (
+                <div
+                  className={
+                    styles.emptyWorkspace
+                  }
                 >
-                  + Создать проект
-                </button>
-              </div>
-            )}
+                  <EmptyState
+                    title="Создайте свой первый проект"
+                    description="После создания проекта здесь появятся его задачи и Kanban-доска."
+                  />
+
+                  <button
+                    type="button"
+                    className={
+                      styles.primaryButton
+                    }
+                    onClick={() => {
+                      setEditingProject(
+                        null,
+                      );
+
+                      setIsProjectFormOpen(
+                        true,
+                      );
+                    }}
+                  >
+                    + Создать проект
+                  </button>
+                </div>
+              )}
 
             {/* PROJECT WORKSPACE */}
 
@@ -465,39 +718,79 @@ const DashboardPage = () => {
               <>
                 {/* STATS */}
 
-                <div className={styles.stats}>
-                  <div className={styles.statCard}>
-                    <span>Всего задач</span>
-
-                    <strong>{tasks.length}</strong>
-                  </div>
-
-                  <div className={styles.statCard}>
-                    <span>К выполнению</span>
+                <div
+                  className={styles.stats}
+                >
+                  <div
+                    className={
+                      styles.statCard
+                    }
+                  >
+                    <span>
+                      Всего задач
+                    </span>
 
                     <strong>
-                      {tasks.filter((task) => task.status === "todo").length}
+                      {tasks.length}
                     </strong>
                   </div>
 
-                  <div className={styles.statCard}>
-                    <span>В процессе</span>
+                  <div
+                    className={
+                      styles.statCard
+                    }
+                  >
+                    <span>
+                      К выполнению
+                    </span>
 
                     <strong>
                       {
-                        tasks.filter((task) => task.status === "in-progress")
-                          .length
+                        tasks.filter(
+                          (task) =>
+                            task.status ===
+                            "todo",
+                        ).length
                       }
                     </strong>
                   </div>
 
-                  <div className={styles.statCard}>
-                    <span>Выполнено</span>
+                  <div
+                    className={
+                      styles.statCard
+                    }
+                  >
+                    <span>
+                      В процессе
+                    </span>
 
                     <strong>
                       {
-                        tasks.filter((task) => task.status === "completed")
-                          .length
+                        tasks.filter(
+                          (task) =>
+                            task.status ===
+                            "in-progress",
+                        ).length
+                      }
+                    </strong>
+                  </div>
+
+                  <div
+                    className={
+                      styles.statCard
+                    }
+                  >
+                    <span>
+                      Выполнено
+                    </span>
+
+                    <strong>
+                      {
+                        tasks.filter(
+                          (task) =>
+                            task.status ===
+                            "completed",
+                        ).length
                       }
                     </strong>
                   </div>
@@ -505,23 +798,41 @@ const DashboardPage = () => {
 
                 {/* TASKS HEADER */}
 
-                <div className={styles.tasksHeader}>
+                <div
+                  className={
+                    styles.tasksHeader
+                  }
+                >
                   <div>
                     <h2>Задачи</h2>
 
                     <span>
-                      {tasks.length} {tasks.length === 1 ? "задача" : "задач"}
+                      {tasks.length}{" "}
+                      {tasks.length === 1
+                        ? "задача"
+                        : "задач"}
                     </span>
                   </div>
 
-                  <div className={styles.viewSwitcher}>
+                  <div
+                    className={
+                      styles.viewSwitcher
+                    }
+                  >
                     <button
                       type="button"
                       className={`
                         ${styles.viewButton}
-                        ${viewMode === "list" ? styles.viewButtonActive : ""}
+                        ${
+                          viewMode ===
+                          "list"
+                            ? styles.viewButtonActive
+                            : ""
+                        }
                       `}
-                      onClick={() => setViewMode("list")}
+                      onClick={() =>
+                        setViewMode("list")
+                      }
                     >
                       ☷ Список
                     </button>
@@ -530,9 +841,16 @@ const DashboardPage = () => {
                       type="button"
                       className={`
                         ${styles.viewButton}
-                        ${viewMode === "kanban" ? styles.viewButtonActive : ""}
+                        ${
+                          viewMode ===
+                          "kanban"
+                            ? styles.viewButtonActive
+                            : ""
+                        }
                       `}
-                      onClick={() => setViewMode("kanban")}
+                      onClick={() =>
+                        setViewMode("kanban")
+                      }
                     >
                       ▦ Kanban
                     </button>
@@ -542,109 +860,221 @@ const DashboardPage = () => {
                 {/* LOADING */}
 
                 {tasksLoading && (
-                  <div className={styles.loading}>
-                    <Loader size="medium" text="Загрузка задач..." />
-                  </div>
-                )}
-
-                {/* EMPTY */}
-
-                {!tasksLoading && tasks.length === 0 && (
-                  <div className={styles.emptyTasks}>
-                    <EmptyState
-                      title="Задач пока нет"
-                      description="Создайте первую задачу для этого проекта."
+                  <div
+                    className={
+                      styles.loading
+                    }
+                  >
+                    <Loader
+                      size="medium"
+                      text="Загрузка задач..."
                     />
+                  </div>
+                )}
 
-                    <button
-                      type="button"
-                      className={styles.primaryButton}
-                      onClick={() => setIsTaskFormOpen(true)}
+                {/* EMPTY TASKS */}
+
+                {!tasksLoading &&
+                  tasks.length === 0 && (
+                    <div
+                      className={
+                        styles.emptyTasks
+                      }
                     >
-                      + Создать задачу
-                    </button>
-                  </div>
-                )}
+                      <EmptyState
+                        title="Задач пока нет"
+                        description="Создайте первую задачу для этого проекта."
+                      />
 
-                {/* LIST */}
+                      <button
+                        type="button"
+                        className={
+                          styles.primaryButton
+                        }
+                        onClick={() =>
+                          setIsTaskFormOpen(
+                            true,
+                          )
+                        }
+                      >
+                        + Создать задачу
+                      </button>
+                    </div>
+                  )}
 
-                {!tasksLoading && tasks.length > 0 && viewMode === "list" && (
-                  <div className={styles.tasksList}>
-                    {tasks.map((task) => (
-                      <article key={task.id} className={styles.taskCard}>
-                        <div className={styles.taskMain}>
-                          <div className={styles.taskHeader}>
-                            <h3>{task.title}</h3>
+                {/* TASK LIST */}
 
-                            <div className={styles.badges}>
-                              <span
-                                className={`
-                                    ${styles.badge}
-                                    ${getStatusClass(task.status)}
-                                  `}
+                {!tasksLoading &&
+                  tasks.length > 0 &&
+                  viewMode === "list" && (
+                    <div
+                      className={
+                        styles.tasksList
+                      }
+                    >
+                      {tasks.map(
+                        (task) => (
+                          <article
+                            key={task.id}
+                            className={
+                              styles.taskCard
+                            }
+                          >
+                            <div
+                              className={
+                                styles.taskMain
+                              }
+                            >
+                              <div
+                                className={
+                                  styles.taskHeader
+                                }
                               >
-                                {getStatusLabel(task.status)}
-                              </span>
+                                <h3>
+                                  {
+                                    task.title
+                                  }
+                                </h3>
 
-                              <span
-                                className={`
-                                    ${styles.badge}
-                                    ${getPriorityClass(task.priority)}
-                                  `}
+                                <div
+                                  className={
+                                    styles.badges
+                                  }
+                                >
+                                  <span
+                                    className={`
+                                      ${styles.badge}
+                                      ${getStatusClass(
+                                        task.status,
+                                      )}
+                                    `}
+                                  >
+                                    {getStatusLabel(
+                                      task.status,
+                                    )}
+                                  </span>
+
+                                  <span
+                                    className={`
+                                      ${styles.badge}
+                                      ${getPriorityClass(
+                                        task.priority,
+                                      )}
+                                    `}
+                                  >
+                                    {getPriorityLabel(
+                                      task.priority,
+                                    )}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <p
+                                className={
+                                  styles.taskDescription
+                                }
                               >
-                                {getPriorityLabel(task.priority)}
-                              </span>
+                                {task.description ||
+                                  "Описание отсутствует"}
+                              </p>
                             </div>
-                          </div>
 
-                          <p className={styles.taskDescription}>
-                            {task.description || "Описание отсутствует"}
-                          </p>
-                        </div>
+                            <div
+                              className={
+                                styles.taskActions
+                              }
+                            >
+                              <button
+                                type="button"
+                                className={
+                                  styles.button
+                                }
+                                onClick={() =>
+                                  setEditingTask(
+                                    task,
+                                  )
+                                }
+                              >
+                                Редактировать
+                              </button>
 
-                        <div className={styles.taskActions}>
-                          <button
-                            type="button"
-                            className={styles.button}
-                            onClick={() => setEditingTask(task)}
-                          >
-                            Редактировать
-                          </button>
-
-                          <button
-                            type="button"
-                            className={`
-                                ${styles.button}
-                                ${styles.deleteButton}
-                              `}
-                            disabled={isDeletingTask}
-                            onClick={() => setDeleteTaskId(task.id)}
-                          >
-                            Удалить
-                          </button>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                )}
+                              <button
+                                type="button"
+                                className={`
+                                  ${styles.button}
+                                  ${styles.deleteButton}
+                                `}
+                                disabled={
+                                  isDeletingTask
+                                }
+                                onClick={() =>
+                                  setDeleteTaskId(
+                                    task.id,
+                                  )
+                                }
+                              >
+                                Удалить
+                              </button>
+                            </div>
+                          </article>
+                        ),
+                      )}
+                    </div>
+                  )}
 
                 {/* KANBAN */}
 
-                {!tasksLoading && tasks.length > 0 && viewMode === "kanban" && (
-                  <div className={styles.kanbanWrapper}>
-                    <KanbanBoard
-                      tasks={tasks}
-                      onEdit={(task: Task) => setEditingTask(task)}
-                      onDelete={(taskId: number) => setDeleteTaskId(taskId)}
-                      onAdd={() => setIsTaskFormOpen(true)}
-                    />
-                  </div>
-                )}
+                {!tasksLoading &&
+                  tasks.length > 0 &&
+                  viewMode === "kanban" && (
+                    <div
+                      className={
+                        styles.kanbanWrapper
+                      }
+                    >
+                      <KanbanBoard
+                        tasks={tasks}
+                        onEdit={(
+                          task: Task,
+                        ) =>
+                          setEditingTask(
+                            task,
+                          )
+                        }
+                        onDelete={(
+                          taskId: number,
+                        ) =>
+                          setDeleteTaskId(
+                            taskId,
+                          )
+                        }
+                        onAdd={() =>
+                          setIsTaskFormOpen(
+                            true,
+                          )
+                        }
+                      />
+                    </div>
+                  )}
               </>
             )}
           </section>
         </div>
       </main>
+
+      {/* =================================================
+          TEAM MEMBERS
+          ОТДЕЛЬНО ОТ DASHBOARD
+      ================================================= */}
+
+      {selectedProject &&
+        selectedProject.team_id && (
+          <TeamMembers
+            teamId={selectedProject.team_id}
+          />
+          
+        )}
+        <TeamInvitations />
 
       {/* =========================
           PROJECT MODAL
@@ -652,26 +1082,28 @@ const DashboardPage = () => {
 
       {isProjectFormOpen && (
         <div
-          className={styles.modalOverlay}
+          className={
+            styles.modalOverlay
+          }
           onClick={(event) => {
-            if (event.target === event.currentTarget) {
+            if (
+              event.target ===
+              event.currentTarget
+            ) {
               handleCloseProjectForm();
             }
           }}
         >
-          <div className={styles.formModal}>
-            <button
-              type="button"
-              className={styles.modalClose}
-              onClick={handleCloseProjectForm}
-              aria-label="Закрыть"
-            >
-              ×
-            </button>
-
+          <div
+            className={
+              styles.formModal
+            }
+          >
             <ProjectForm
               project={editingProject}
-              onCancel={handleCloseProjectForm}
+              onCancel={
+                handleCloseProjectForm
+              }
             />
           </div>
         </div>
@@ -681,32 +1113,50 @@ const DashboardPage = () => {
           TASK CREATE MODAL
       ========================= */}
 
-      {isTaskFormOpen && selectedProject && (
-        <div
-          className={styles.modalOverlay}
-          onClick={(event) => {
-            if (event.target === event.currentTarget) {
-              handleCloseTaskForm();
+      {isTaskFormOpen &&
+        selectedProject && (
+          <div
+            className={
+              styles.modalOverlay
             }
-          }}
-        >
-          <div className={styles.formModal}>
-            <button
-              type="button"
-              className={styles.modalClose}
-              onClick={handleCloseTaskForm}
-              aria-label="Закрыть"
+            onClick={(event) => {
+              if (
+                event.target ===
+                event.currentTarget
+              ) {
+                handleCloseTaskForm();
+              }
+            }}
+          >
+            <div
+              className={
+                styles.formModal
+              }
             >
-              ×
-            </button>
+              <button
+                type="button"
+                className={
+                  styles.modalClose
+                }
+                onClick={
+                  handleCloseTaskForm
+                }
+                aria-label="Закрыть"
+              >
+                ×
+              </button>
 
-            <TaskForm
-              projectId={selectedProject.id}
-              onCancel={handleCloseTaskForm}
-            />
+              <TaskForm
+                projectId={
+                  selectedProject.id
+                }
+                onCancel={
+                  handleCloseTaskForm
+                }
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* =========================
           TASK EDIT MODAL
@@ -714,18 +1164,31 @@ const DashboardPage = () => {
 
       {editingTask && (
         <div
-          className={styles.modalOverlay}
+          className={
+            styles.modalOverlay
+          }
           onClick={(event) => {
-            if (event.target === event.currentTarget) {
+            if (
+              event.target ===
+              event.currentTarget
+            ) {
               setEditingTask(null);
             }
           }}
         >
-          <div className={styles.formModal}>
+          <div
+            className={
+              styles.formModal
+            }
+          >
             <button
               type="button"
-              className={styles.modalClose}
-              onClick={() => setEditingTask(null)}
+              className={
+                styles.modalClose
+              }
+              onClick={() =>
+                setEditingTask(null)
+              }
               aria-label="Закрыть"
             >
               ×
@@ -733,7 +1196,9 @@ const DashboardPage = () => {
 
             <TaskEditForm
               task={editingTask}
-              onCancel={() => setEditingTask(null)}
+              onCancel={() =>
+                setEditingTask(null)
+              }
             />
           </div>
         </div>
@@ -747,8 +1212,12 @@ const DashboardPage = () => {
         <ConfirmModal
           title="Удалить задачу?"
           message="Это действие нельзя отменить. Вы действительно хотите удалить эту задачу?"
-          onCancel={() => setDeleteTaskId(null)}
-          onConfirm={handleDeleteTask}
+          onCancel={() =>
+            setDeleteTaskId(null)
+          }
+          onConfirm={
+            handleDeleteTask
+          }
           loading={isDeletingTask}
         />
       )}
@@ -765,9 +1234,15 @@ const DashboardPage = () => {
               ? `Вы действительно хотите удалить проект «${projectToDelete.name}»?`
               : "Вы действительно хотите удалить этот проект?"
           }
-          onCancel={() => setDeleteProjectId(null)}
-          onConfirm={handleDeleteProject}
-          loading={isDeletingProject}
+          onCancel={() =>
+            setDeleteProjectId(null)
+          }
+          onConfirm={
+            handleDeleteProject
+          }
+          loading={
+            isDeletingProject
+          }
         />
       )}
     </>

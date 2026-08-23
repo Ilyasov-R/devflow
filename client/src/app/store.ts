@@ -4,6 +4,8 @@ import authReducer from "../features/auth/authSlice";
 import projectsReducer from "../features/projects/projectsSlice";
 import tasksReducer from "../features/tasks/tasksSlice";
 import notificationsReducer from "../features/notifications/notificationsSlice";
+import teamSlice from '../features/teams/teamSlice'
+import invitationsReducer from "../features/teams/invitationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +13,8 @@ export const store = configureStore({
     projects: projectsReducer,
     tasks: tasksReducer,
     notifications: notificationsReducer,
+    teams: teamSlice,
+    invitations: invitationsReducer,
   },
 });
 
