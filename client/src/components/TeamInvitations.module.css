@@ -21,13 +21,14 @@
   align-items: center;
   justify-content: center;
 
+  padding: 0;
+
   border: 1px solid #e5e7eb;
   border-radius: 14px;
 
   background: #ffffff;
 
-  box-shadow:
-    0 8px 25px rgba(0, 0, 0, 0.14);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.14);
 
   cursor: pointer;
 
@@ -35,14 +36,16 @@
 
   transition:
     transform 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 
 .toggleButton:hover {
   transform: translateY(-2px);
 
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.18);
+  background: #f8fafc;
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
 }
 
 /* =========================
@@ -63,6 +66,8 @@
   justify-content: center;
 
   padding: 0 4px;
+
+  box-sizing: border-box;
 
   border: 2px solid #ffffff;
   border-radius: 999px;
@@ -87,6 +92,8 @@
 
   width: 330px;
 
+  box-sizing: border-box;
+
   overflow: hidden;
 
   background: #ffffff;
@@ -94,8 +101,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 16px;
 
-  box-shadow:
-    0 15px 45px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.16);
 
   animation: openPanel 0.2s ease;
 }
@@ -103,14 +109,12 @@
 @keyframes openPanel {
   from {
     opacity: 0;
-    transform: translateY(8px)
-      scale(0.97);
+    transform: translateY(8px) scale(0.97);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0)
-      scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -123,17 +127,28 @@
   align-items: center;
   justify-content: space-between;
 
+  gap: 10px;
+
   padding: 15px;
 
   border-bottom: 1px solid #eef2f7;
 }
 
+.header > div {
+  min-width: 0;
+}
+
 .header strong {
   display: block;
+
+  overflow: hidden;
 
   color: #0f172a;
 
   font-size: 14px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .header span {
@@ -150,6 +165,10 @@
   width: 30px;
   height: 30px;
 
+  flex-shrink: 0;
+
+  padding: 0;
+
   border: none;
   border-radius: 8px;
 
@@ -160,6 +179,8 @@
   font-size: 20px;
 
   cursor: pointer;
+
+  transition: background 0.15s ease;
 }
 
 .closeButton:hover {
@@ -174,6 +195,8 @@
   max-height: 400px;
 
   padding: 10px;
+
+  box-sizing: border-box;
 
   overflow-y: auto;
 }
@@ -190,10 +213,11 @@
 
   padding: 11px;
 
+  box-sizing: border-box;
+
   border-radius: 11px;
 
-  transition:
-    background 0.15s ease;
+  transition: background 0.15s ease;
 }
 
 .invitation:hover {
@@ -219,7 +243,6 @@
 
 .info {
   min-width: 0;
-
   flex: 1;
 }
 
@@ -244,6 +267,8 @@
   color: #64748b;
 
   font-size: 10px;
+
+  line-height: 1.35;
 }
 
 .info small {
@@ -265,44 +290,56 @@
   flex-direction: column;
 
   gap: 5px;
+
+  flex-shrink: 0;
 }
 
 .accept,
 .reject {
-  padding: 5px 8px;
+  width: 70px;
+  min-width: 70px;
+
+  height: 28px;
+
+  box-sizing: border-box;
+
+  padding: 0 8px;
 
   border: none;
   border-radius: 6px;
+
+  font-family: inherit;
 
   font-size: 9px;
 
   cursor: pointer;
 
   transition:
-    opacity 0.15s ease;
+    opacity 0.15s ease,
+    background 0.15s ease;
 }
 
 .accept {
   background: #0f172a;
-
   color: #ffffff;
+}
+
+.accept:hover {
+  background: #1e293b;
 }
 
 .reject {
   background: #f1f5f9;
-
   color: #64748b;
 }
 
-.accept:hover,
 .reject:hover {
-  opacity: 0.8;
+  background: #e2e8f0;
 }
 
 .accept:disabled,
 .reject:disabled {
   opacity: 0.5;
-
   cursor: not-allowed;
 }
 
@@ -381,12 +418,92 @@
 
 @media (max-width: 700px) {
   .wrapper {
-    right: 14px;
-    bottom: 75px;
+    right: 12px;
+    bottom: 70px;
+  }
+
+  .toggleButton {
+    width: 46px;
+    height: 46px;
+
+    border-radius: 14px;
+
+    font-size: 17px;
   }
 
   .panel {
-    width: calc(100vw - 28px);
-    max-width: 330px;
+    right: 0;
+    bottom: 58px;
+
+    width: min(320px, calc(100vw - 24px));
+  }
+
+  .header {
+    padding: 12px;
+  }
+
+  .content {
+    max-height: 340px;
+
+    padding: 8px;
+  }
+
+  .invitation {
+    display: grid;
+
+    grid-template-columns: 34px minmax(0, 1fr);
+
+    gap: 8px;
+
+    padding: 9px;
+  }
+
+  .teamIcon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .info {
+    min-width: 0;
+  }
+
+  .info strong {
+    font-size: 11px;
+  }
+
+  .info span {
+    font-size: 9px;
+  }
+
+  .info small {
+    font-size: 8px;
+  }
+
+  .actions {
+    grid-column: 1 / -1;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 7px;
+
+    width: 100%;
+  }
+
+  .accept,
+  .reject {
+    width: 100%;
+    min-width: 0;
+
+    height: 34px;
+
+    padding: 0 8px;
+
+    box-sizing: border-box;
+
+    font-size: 10px;
+
+    white-space: nowrap;
   }
 }
